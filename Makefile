@@ -1,46 +1,66 @@
-builddir := build
-boot := ${builddir}/boot.o
-kernel := ${builddir}/kernel.o
-isodir := ${builddir}/isodir
-grub := ${isodir}/boot/grub/grub.cfg
-bin := ${isodir}/boot/boss.bin
-iso := ${builddir}/boss.iso
+OSNAME ?= boss
+BUILDDIR ?= build
+
+ARCHDIR := arch
+ARCH ?= i386
+
+KERNELDIR := kernel
+
+OBJS=\
+$(BUILDDIR)/$(ARCHDIR)/$(ARCH)/boot.o \
+$(BUILDDIR)/$(KERNELDIR)/kernel.o
+
+ISODIR := $(BUILDDIR)/isodir
+ISO := $(BUILDDIR)/$(OSNAME).iso
+BIN := $(ISODIR)/boot/$(OSNAME).bin
+LINKERFILE := $(ARCHDIR)/$(ARCH)/linker.ld
+
+CFLAGS ?= -O2 -g
+CFLAGS := $(CFLAGS) -ffreestanding -Wall -Wextra
+
+ifeq ($(ARCH),i386)
+    NASMTARGET := elf32
+else
+    $(error Unsupported ARCH: $(ARCH). Supported: i386)
+endif
 
 .PHONY: build
-build: ${iso}
+build: $(ISO)
 
 .PHONY: run
-run: ${iso}
-	qemu-system-i386 -cdrom ${iso}
+run: $(ISO)
+	qemu-system-i386 -cdrom $(ISO)
 
 .PHONY: clean
 clean:
-	rm -rf ${builddir}
+	rm -rf $(BUILDDIR)
 
 .PHONY: help
 help:
-	@echo 'make build		default target, builds' ${iso}
+	@echo 'make build		default target, builds' $(ISO)
 	@echo 'make run  		runs generated iso with qemu'
 	@echo 'make clean  		deletes build directory'
 	@echo 'make help  		shows this help screen'
 
-${iso}: ${bin} ${grub}
-	dirname ${iso} | xargs mkdir -p
-	grub-mkrescue -o ${iso} ${isodir}
+$(ISO): $(BIN) $(ISODIR)/boot/grub/grub.cfg
+	dirname $@ | xargs mkdir -p
+	grub-mkrescue -o $@ $(ISODIR)
 
-${bin}: ${kernel} ${boot} linker.ld
-	dirname ${bin} | xargs mkdir -p
-	i686-elf-gcc -ffreestanding -nostdlib -T linker.ld ${boot} ${kernel} -o ${bin} -lgcc
+$(BIN): $(OBJS) $(LINKER_FILE)
+	dirname $@ | xargs mkdir -p
+	$(CC) -nostdlib -T $(LINKERFILE) $(OBJS) -o $@ -lgcc
 
-${grub}:
-	dirname ${grub} | xargs mkdir -p
-	echo 'menuentry "boss" { multiboot /boot/boss.bin }' > ${grub}
+$(ISODIR)/boot/grub/grub.cfg:
+	dirname $@ | xargs mkdir -p
+	echo 'menuentry "boss" { multiboot /boot/boss.bin }' > $@
 
-${kernel}: kernel.c
-	dirname ${kernel} | xargs mkdir -p
-	i686-elf-gcc -std=gnu99 -ffreestanding -O2 -c kernel.c -o ${kernel}
+.PREFIXES: .o .c .asm
 
-${boot}: boot.asm
-	dirname ${boot} | xargs	mkdir -p
-	nasm -felf32 boot.asm -o ${boot}
+$(BUILDDIR)/%.o : %.c
+	dirname $@ | xargs mkdir -p
+	$(CC) $(CFLAGS) -std=gnu99 -c $< -o $@
+
+$(BUILDDIR)/%.o : %.asm
+	dirname $@ | xargs mkdir -p
+	nasm -f $(NASMTARGET) $< -o $@
 
