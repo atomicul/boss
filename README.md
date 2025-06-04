@@ -12,13 +12,16 @@ run directly on hardware.
 * A [GCC Cross-Compiler](https://wiki.osdev.org/GCC_Cross-Compiler) for **i686-elf**
 * Netwide Assembler (NASM)
 * `grub-mkrescue`, `xorriso` for creating a bootable image containing the GRUB bootloader
-* Make
+* GNU make
 * Optionally, `qemu-system` for running a virtual machine (if you wish to run `make run`)
 
 ### Instructions
 ```bash
 # Checkout the repository
 git clone https://github.com/atomicul/boss && cd boss
+
+# Set a suitable cross compiler
+export CC="<GCC BINARY>"
 
 # Build the image file
 make build # this creates ./build/boss.iso
