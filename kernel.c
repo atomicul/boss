@@ -51,6 +51,6 @@ void term_print(const char *str) {
 void kernel_main(void) {
     term_clear();
 
-    term_print("Hello, LinkdeIn!\n");
+    term_print("Hello, LinkedIn!\n");
     term_print("Welcome to my kernel.\n");
 }
