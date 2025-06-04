@@ -6,12 +6,27 @@ grub := ${isodir}/boot/grub/grub.cfg
 bin := ${isodir}/boot/boss.bin
 iso := ${builddir}/boss.iso
 
+.PHONY: build
+build: ${iso}
+
+.PHONY: run
+run: ${iso}
+	qemu-system-i386 -cdrom ${iso}
+
+.PHONY: clean
+clean:
+	rm -rf ${builddir}
+
+.PHONY: help
+help:
+	@echo 'make build		default target, builds' ${iso}
+	@echo 'make run  		runs generated iso with qemu'
+	@echo 'make clean  		deletes build directory'
+	@echo 'make help  		shows this help screen'
+
 ${iso}: ${bin} ${grub}
 	dirname ${iso} | xargs mkdir -p
 	grub-mkrescue -o ${iso} ${isodir}
-
-run: ${iso}
-	qemu-system-i386 -cdrom ${iso}
 
 ${bin}: ${kernel} ${boot} linker.ld
 	dirname ${bin} | xargs mkdir -p
@@ -29,5 +44,3 @@ ${boot}: boot.asm
 	dirname ${boot} | xargs	mkdir -p
 	nasm -felf32 boot.asm -o ${boot}
 
-clean:
-	rm -rf ${builddir}
