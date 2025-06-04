@@ -11,7 +11,7 @@ run directly on hardware.
 ### Dependencies
 * A [GCC Cross-Compiler](https://wiki.osdev.org/GCC_Cross-Compiler) for **i686-elf**
 * Netwide Assembler (NASM)
-* `grub-mkrescue`, `xorriso` for creating a bootable image containing the GRUB bootloader.
+* `grub-mkrescue`, `xorriso` for creating a bootable image containing the GRUB bootloader
 * Make
 * Optionally, `qemu-system` for running a virtual machine (if you wish to run `make run`)
 
