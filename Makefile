@@ -6,8 +6,11 @@ ARCH ?= i386
 
 KERNELDIR := kernel
 
+include $(ARCHDIR)/$(ARCH)/make.config
+ARCH_OBJS := $(addprefix $(BUILDDIR)/$(ARCHDIR)/$(ARCH)/,$(ARCH_OBJS))
+
 OBJS=\
-$(BUILDDIR)/$(ARCHDIR)/$(ARCH)/boot.o \
+$(ARCH_OBJS) \
 $(BUILDDIR)/$(KERNELDIR)/kernel.o
 
 ISODIR := $(BUILDDIR)/isodir
