@@ -1,69 +1,49 @@
-OSNAME ?= boss
-BUILDDIR ?= build
+export OSNAME ?= boss
+export ARCH ?= i386
 
-ARCHDIR := arch
-ARCH ?= i386
+HEADER_PROJECTS=\
+kernel
 
-KERNELDIR := kernel
+PROJECTS=\
+kernel \
+grub
 
-include $(ARCHDIR)/$(ARCH)/make.config
-ARCH_OBJS := $(addprefix $(BUILDDIR)/$(ARCHDIR)/$(ARCH)/,$(ARCH_OBJS))
+CWD != pwd
 
-OBJS=\
-$(ARCH_OBJS) \
-$(BUILDDIR)/$(KERNELDIR)/kernel.o
-
-ISODIR := $(BUILDDIR)/isodir
-ISO := $(BUILDDIR)/$(OSNAME).iso
-BIN := $(ISODIR)/boot/$(OSNAME).bin
-LINKERFILE := $(ARCHDIR)/$(ARCH)/linker.ld
+export DESTDIR := $(CWD)/isodir
+ISO := $(OSNAME).iso
 
 CFLAGS ?= -O2 -g
-CFLAGS := $(CFLAGS) -Iinclude -ffreestanding -Wall -Wextra
-
-ifeq ($(ARCH),i386)
-    NASMTARGET := elf32
-else
-    $(error Unsupported ARCH: $(ARCH). Supported: i386)
-endif
+CFLAGS := $(CFLAGS) --sysroot=$(DESTDIR) -isystem=/usr/include
+export CFLAGS
 
 .PHONY: build
-build: $(ISO)
+build:
+	for p in $(HEADER_PROJECTS); do $(MAKE) -C "$$p" install-headers; done
+	for p in $(PROJECTS); do $(MAKE) -C "$$p" install; done
+
+.PHONY: iso
+iso: $(ISO)
+
+$(ISO): build
+	grub-mkrescue -o $@ "$(DESTDIR)"
 
 .PHONY: run
 run: $(ISO)
-	qemu-system-i386 -cdrom $(ISO)
+ifndef QEMU
+	$(error you must specify $$QEMU)
+endif
+	$(QEMU) -cdrom $(ISO)
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILDDIR)
+	rm -rf "$(DESTDIR)"
+	rm -f $(ISO)
 
 .PHONY: help
 help:
-	@echo 'make build		default target, builds' $(ISO)
-	@echo 'make run  		runs generated iso with qemu'
-	@echo 'make clean  		deletes build directory'
-	@echo 'make help  		shows this help screen'
-
-$(ISO): $(BIN) $(ISODIR)/boot/grub/grub.cfg
-	dirname $@ | xargs mkdir -p
-	grub-mkrescue -o $@ $(ISODIR)
-
-$(BIN): $(OBJS) $(LINKER_FILE)
-	dirname $@ | xargs mkdir -p
-	$(CC) -nostdlib -T $(LINKERFILE) $(OBJS) -o $@ -lgcc
-
-$(ISODIR)/boot/grub/grub.cfg:
-	dirname $@ | xargs mkdir -p
-	echo 'menuentry "boss" { multiboot /boot/boss.bin }' > $@
-
-.PREFIXES: .o .c .asm
-
-$(BUILDDIR)/%.o : %.c
-	dirname $@ | xargs mkdir -p
-	$(CC) $(CFLAGS) -std=gnu99 -c $< -o $@
-
-$(BUILDDIR)/%.o : %.asm
-	dirname $@ | xargs mkdir -p
-	nasm -f $(NASMTARGET) $< -o $@
-
+	@echo 'make build	default target, builds systemdir'
+	@echo 'make iso	makes' $(ISO)
+	@echo 'make run  	runs with qemu'
+	@echo 'make clean  	deletes all generated artifacts'
+	@echo 'make help  	shows this help screen'

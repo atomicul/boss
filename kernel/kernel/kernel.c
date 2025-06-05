@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "kernel/tty.h"
+#include <kernel/tty.h>
 
 #if defined(__linux__)
 #error "This code must be compiled with a cross-compiler"
