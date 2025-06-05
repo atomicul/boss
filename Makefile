@@ -19,7 +19,7 @@ BIN := $(ISODIR)/boot/$(OSNAME).bin
 LINKERFILE := $(ARCHDIR)/$(ARCH)/linker.ld
 
 CFLAGS ?= -O2 -g
-CFLAGS := $(CFLAGS) -ffreestanding -Wall -Wextra
+CFLAGS := $(CFLAGS) -Iinclude -ffreestanding -Wall -Wextra
 
 ifeq ($(ARCH),i386)
     NASMTARGET := elf32
