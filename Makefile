@@ -39,6 +39,8 @@ endif
 clean:
 	rm -rf "$(DESTDIR)"
 	rm -f $(ISO)
+	for p in $(PROJECTS); do $(MAKE) -C "$$p" clean; done
+
 
 .PHONY: help
 help:
