@@ -2,9 +2,11 @@ export OSNAME ?= boss
 export ARCH ?= i386
 
 HEADER_PROJECTS=\
+libk \
 kernel
 
 PROJECTS=\
+libk \
 kernel \
 grub
 

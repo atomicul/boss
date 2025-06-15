@@ -3,6 +3,8 @@
 
 #include <kernel/tty.h>
 
+#include <stdio.h>
+
 #if defined(__linux__)
 #error "This code must be compiled with a cross-compiler"
 #elif !defined(__i386__)
@@ -10,8 +12,8 @@
 #endif
 
 void kernel_main(void) {
-    term_clear();
+    term_clear(); // init terminal
 
-    term_print("Hello, LinkedIn!\n");
-    term_print("Welcome to my kernel.\n");
+    puts("Hello, LinkedIn!");
+    puts("Welcome to my kernel.");
 }
