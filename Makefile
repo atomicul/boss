@@ -21,8 +21,14 @@ export CFLAGS
 
 .PHONY: build
 build:
-	for p in $(HEADER_PROJECTS); do $(MAKE) -C "$$p" install-headers; done
-	for p in $(PROJECTS); do $(MAKE) -C "$$p" install; done
+	for p in $(HEADER_PROJECTS); do \
+		echo "* Running $(MAKE) install-headers in $$p"; \
+		$(MAKE) -C "$$p" install-headers; \
+	done
+	for p in $(PROJECTS); do \
+		echo "* Running $(MAKE) install in $$p"; \
+		$(MAKE) -C "$$p" install; \
+	done
 
 .PHONY: iso
 iso: $(ISO)
