@@ -8,7 +8,7 @@
 #define KTH_BIT(arr, k) (arr[k/32]>>(k%32) & 1)
 #define TOGGLE_KTH_BIT(arr, k) (arr[k/32] ^= 1<<(k%32))
 
-extern const uintptr_t endkernel;
+extern void endkernel;
 uintptr_t frames_start;
 
 uint32_t page_bitmap[SIZE];
@@ -26,7 +26,7 @@ void init_frame_alloc(void) {
     if (frames_start)
         return;
 
-    frames_start = next_aligned_frame(endkernel);
+    frames_start = next_aligned_frame((uintptr_t)&endkernel);
 }
 
 uintptr_t alloc_frame(void) {
