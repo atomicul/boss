@@ -22,7 +22,7 @@ BIN := $(BUILDDIR)/$(OSNAME).bin
 LINKERFILE := $(ARCHDIR)/$(ARCH)/linker.ld
 
 CFLAGS ?= -O2 -g
-CFLAGS := $(CFLAGS) -ffreestanding -Wall -Wextra
+CFLAGS := $(CFLAGS) -std=gnu11 -ffreestanding -Wall -Wextra
 
 ifeq ($(ARCH),i386)
     NASMTARGET := elf32
