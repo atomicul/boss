@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void init_frame_alloc(void);
 uintptr_t alloc_frame(void);
 void free_frame(uintptr_t frame_addr);
 
