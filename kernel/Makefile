@@ -67,13 +67,13 @@ endif
 
 $(BIN): $(OBJS) $(LINKER_FILE)
 	dirname $@ | xargs mkdir -p
-	$(CC) $(CFLAGS) -T $(LINKERFILE) $(OBJS) $(LIBS) -o $@
+	$(CC) -T $(LINKERFILE) $(OBJS) $(LIBS) -o $@ $(CFLAGS) $(LDFLAGS)
 
 .PREFIXES: .o .c .asm
 
 $(BUILDDIR)/%.o : %.c
 	dirname $@ | xargs mkdir -p
-	$(CC) $(CFLAGS) -std=gnu99 -c $< -o $@
+	$(CC) -std=gnu99 -c $< -o $@ $(CXXFLAGS) $(CFLAGS)
 
 $(BUILDDIR)/%.o : %.asm
 	dirname $@ | xargs mkdir -p

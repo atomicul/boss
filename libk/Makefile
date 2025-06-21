@@ -64,4 +64,4 @@ $(BIN): $(OBJS)
 
 $(BUILDDIR)/%.o : %.c
 	dirname $@ | xargs mkdir -p
-	$(CC) $(CFLAGS) -std=gnu99 -c $< -o $@
+	$(CC) -std=gnu99 -c $< -o $@ $(CXXFLAGS) $(CFLAGS)
