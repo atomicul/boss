@@ -12,7 +12,11 @@ ARCH_OBJS := $(addprefix $(ARCHDIR)/$(ARCH)/,$(ARCH_OBJS))
 OBJS=\
 $(ARCH_OBJS) \
 stdio/putchar.o \
-stdio/puts.o
+stdio/puts.o \
+string/strcpy.o \
+string/memcpy.o \
+string/strcat.o \
+string/strlen.o
 
 OBJS := $(addprefix $(BUILDDIR)/,$(OBJS))
 
