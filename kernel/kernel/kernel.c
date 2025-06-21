@@ -2,6 +2,7 @@
 #include <stdint.h>
 
 #include <kernel/tty.h>
+#include <kernel/page_alloc.h>
 
 #include <stdio.h>
 
@@ -12,8 +13,10 @@
 #endif
 
 void kernel_main(void) {
+    init_frame_alloc();
     term_clear(); // init terminal
 
+    free_frame(0);
     puts("Hello, LinkedIn!");
     puts("Welcome to my kernel.");
 }
