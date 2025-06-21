@@ -13,6 +13,7 @@ OBJS=\
 $(ARCH_OBJS) \
 stdio/putchar.o \
 stdio/puts.o \
+stdio/printf.o \
 string/strcpy.o \
 string/memcpy.o \
 string/strcat.o \
