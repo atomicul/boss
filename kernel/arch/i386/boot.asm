@@ -17,9 +17,12 @@ resb 16384 ; 16 KiB is reserved for stack
 stack_top:
 
 section .text
+extern enable_paging
 global _start:function (_start.end - _start)
 _start:
 	mov esp, stack_top
+
+    call enable_paging
 
 	extern kernel_main
 	call kernel_main

@@ -26,4 +26,11 @@ SECTIONS
 		*(.bss)
         endkernel = .;
 	}
+
+    .pagedir BLOCK(4K) : ALIGN(4K)
+	{
+		page_dir_start = .;
+		. += 4K;
+		page_dir_end = .;
+	}
 }
