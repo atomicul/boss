@@ -29,8 +29,7 @@ SECTIONS
 
     .pagedir BLOCK(4K) : ALIGN(4K)
 	{
-		page_dir_start = .;
+		page_dir = .;
 		. += 4K;
-		page_dir_end = .;
 	}
 }

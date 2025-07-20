@@ -1,6 +1,6 @@
 section .text
 global enable_paging
-extern page_dir_start
+extern page_dir
 
 ; Page directory/table entry flags
 PDE_PRESENT    equ 1 << 0   ; Present bit
@@ -14,7 +14,7 @@ CR4_PSE        equ 1 << 4   ; Enables 4MB pages
 
 enable_paging:
     ; Set up page directory
-    mov edi, page_dir_start       ; Load page directory start address
+    mov edi, page_dir             ; Load page directory start address
     mov ecx, 1024                 ; 1024 entries in page directory
     xor eax, eax                  ; Start with physical address 0
     mov edx, PDE_PRESENT | PDE_WRITABLE | PDE_PAGESIZE
@@ -27,7 +27,7 @@ enable_paging:
     loop .set_entry
 
     ; Load page directory address into CR3
-    mov eax, page_dir_start
+    mov eax, page_dir
     mov cr3, eax
 
     mov eax, cr4
