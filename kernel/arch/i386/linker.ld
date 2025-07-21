@@ -24,12 +24,12 @@ SECTIONS
 	{
 		*(COMMON)
 		*(.bss)
-        endkernel = .;
 	}
 
     .pagedir BLOCK(4K) : ALIGN(4K)
 	{
 		page_dir = .;
 		. += 4K;
+        endkernel = .;
 	}
 }

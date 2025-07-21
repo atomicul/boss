@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #define ENTRIES 1024
 
@@ -14,6 +15,7 @@ typedef enum PDE_Flags {
     PDE_PAGE_SIZE       = 1<<7,
 } PDE_Flags;
 
+extern void endkernel;
 extern PDE page_dir[ENTRIES];
 
 PDE* pde_get_by_linear_address(uintptr_t addr) {
@@ -51,14 +53,22 @@ void pde_write_table_address(PDE *entry, uint32_t addr) {
 }
 
 void pde_init(void) {
+    // Identity map first 4MB
+    pde_write_page_address(page_dir, 0);
+    page_dir[0] |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;
+
+    // Clear the rest of the page directory
+    memset(page_dir+1, 0, ENTRIES - 1);
+
+    // Map the kernel in the higher half
     const uintptr_t kernel_position = 0xC0000000;
 
     PDE* entry = pde_get_by_linear_address(kernel_position);
 
     uintptr_t physical_addr = 0;
-    for (int i = 0; i<16; i++, entry++) {
+    uintptr_t endkernel_addr = (uintptr_t)&endkernel;
+    for (; endkernel_addr > physical_addr; entry++, physical_addr += 1 << 22) {
         pde_write_page_address(entry, physical_addr);
-        *entry |= PDE_PRESENT | PDE_WRITE_ENABLED;
-        physical_addr += 1 << 22;
+        *entry |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;
     }
 }

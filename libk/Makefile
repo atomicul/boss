@@ -16,6 +16,7 @@ stdio/puts.o \
 stdio/printf.o \
 string/strcpy.o \
 string/memcpy.o \
+string/memset.o \
 string/strcat.o \
 string/strlen.o
 
