@@ -49,3 +49,16 @@ void pde_write_table_address(PDE *entry, uint32_t addr) {
 
     *entry = entry_val;
 }
+
+void pde_init(void) {
+    const uintptr_t kernel_position = 0xC0000000;
+
+    PDE* entry = pde_get_by_linear_address(kernel_position);
+
+    uintptr_t physical_addr = 0;
+    for (int i = 0; i<16; i++, entry++) {
+        pde_write_page_address(entry, physical_addr);
+        *entry |= PDE_PRESENT | PDE_WRITE_ENABLED;
+        physical_addr += 1 << 22;
+    }
+}
