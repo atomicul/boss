@@ -13,12 +13,12 @@ uintptr_t frames_start;
 
 uint32_t page_bitmap[SIZE];
 
-static inline uintptr_t next_aligned_frame(uintptr_t frame) {
-    if (frame & 0xFFF) {
-        frame &= ~(uintptr_t)0xFFF;
-        frame += 4096;
+static inline uintptr_t next_aligned_huge_frame(uintptr_t frame) {
+    const uintptr_t mask = (1 << 22) - 1;
+    if (frame & mask) {
+        frame &= ~mask;
+        frame += (mask + 1);
     }
-
     return frame;
 }
 
@@ -26,7 +26,7 @@ void init_frame_alloc(void) {
     if (frames_start)
         return;
 
-    frames_start = next_aligned_frame((uintptr_t)&endkernel);
+    frames_start = next_aligned_huge_frame((uintptr_t)&endkernel);
 }
 
 uintptr_t alloc_frame(void) {
