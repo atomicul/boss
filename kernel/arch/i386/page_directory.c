@@ -27,11 +27,12 @@ void pde_write_page_address(PDE *entry, uint32_t addr) {
         panic("Expected 4MB aligned address");
     }
 
-    PDE entry_copy = *entry;
-    entry_copy |= aligned_addr;
-    entry_copy |= PDE_PAGE_SIZE;
+    // Clear old base address and preserve flags
+    PDE entry_val = *entry & 0x003FFFFF;
+    entry_val |= aligned_addr;
+    entry_val |= PDE_PAGE_SIZE;
 
-    *entry = entry_copy;
+    *entry = entry_val;
 }
 
 void pde_write_table_address(PDE *entry, uint32_t addr) {
@@ -41,9 +42,10 @@ void pde_write_table_address(PDE *entry, uint32_t addr) {
         panic("Expected 4KB aligned address");
     }
 
-    PDE entry_copy = *entry;
-    entry_copy |= aligned_addr;
-    entry_copy &= ~(PDE)PDE_PAGE_SIZE;
+    // Clear old base address and preserve flags
+    PDE entry_val = *entry & 0x003FFFFF;
+    entry_val |= aligned_addr;
+    entry_val |= PDE_PAGE_SIZE;
 
-    *entry = entry_copy;
+    *entry = entry_val;
 }
