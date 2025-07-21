@@ -16,7 +16,7 @@ typedef enum PDE_Flags {
 
 extern PDE page_dir[ENTRIES];
 
-PDE* pde_get_by_liniar_address(uintptr_t addr) {
+PDE* pde_get_by_linear_address(uintptr_t addr) {
     return page_dir + (addr >> 22);
 }
 

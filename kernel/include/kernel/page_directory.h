@@ -16,7 +16,7 @@ typedef enum PDE_Flags {
     PDE_PAGE_SIZE       = 1<<7,
 } PDE_Flags;
 
-PDE* pde_get_by_liniar_address(uintptr_t addr);
+PDE* pde_get_by_linear_address(uintptr_t addr);
 void pde_write_page_address(PDE *entry, uint32_t addr);
 void pde_write_table_address(PDE *entry, uint32_t addr);
 
