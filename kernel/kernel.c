@@ -2,7 +2,7 @@
 #include <stdint.h>
 
 #include <kernel/tty.h>
-#include <kernel/page_alloc.h>
+#include <kernel/physical_memory_allocator.h>
 #include <kernel/page_directory.h>
 #include <kernel/page_table.h>
 
@@ -18,7 +18,7 @@ void kernel_main(void) {
     term_clear(); // init terminal
     pde_init();
     pte_init();
-    init_frame_alloc();
+    pma_init();
 
     puts("Hello, LinkedIn!");
     puts("Welcome to my kernel.");
