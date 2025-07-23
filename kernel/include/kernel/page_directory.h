@@ -1,11 +1,8 @@
 #ifndef _KERNEL_PAGE_DIRECTORY_H
 #define _KERNEL_PAGE_DIRECTORY_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#define ENTRIES 1024
 
 typedef uint32_t PDE;
 
