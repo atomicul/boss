@@ -4,6 +4,7 @@
 #include <kernel/tty.h>
 #include <kernel/page_alloc.h>
 #include <kernel/page_directory.h>
+#include <kernel/page_table.h>
 
 #include <stdio.h>
 
@@ -16,6 +17,7 @@
 void kernel_main(void) {
     term_clear(); // init terminal
     pde_init();
+    pte_init();
     init_frame_alloc();
 
     puts("Hello, LinkedIn!");

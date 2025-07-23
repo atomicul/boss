@@ -30,6 +30,12 @@ SECTIONS
 	{
 		page_dir = .;
 		. += 4K;
-        endkernel = .;
 	}
+
+    .pagetables BLOCK(4K) : ALIGN(4K)
+    {
+        page_tables = .;
+        . += 4M;
+        endkernel = .;
+    }
 }
