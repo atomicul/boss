@@ -14,8 +14,8 @@
 #endif
 
 void kernel_main(void) {
-    pde_init();
     term_clear(); // init terminal
+    pde_init();
     init_frame_alloc();
 
     puts("Hello, LinkedIn!");
