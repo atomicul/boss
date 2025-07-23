@@ -12,7 +12,7 @@ typedef enum PMA_FrameSize {
 } PMA_FrameSize;
 
 void pma_init(void);
-uintptr_t pma_alloc_frame(PMA_FrameSize frame_size);
+uintptr_t pma_get_frame(PMA_FrameSize frame_size);
 void pma_free_frame(uintptr_t frame_addr);
 
 #endif

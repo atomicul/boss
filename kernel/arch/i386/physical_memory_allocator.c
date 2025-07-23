@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #define FRAME_SIZE 0x1000
 #define HUGE_FRAME_SIZE 0x400000
@@ -42,7 +43,7 @@ void pma_init(void) {
         return;
 
     frames_start = next_aligned_huge_frame((uintptr_t)&endkernel);
-    huge_frames_start = frames_start + 8*sizeof(frame_bitset) + FRAME_SIZE;
+    huge_frames_start = next_aligned_huge_frame(frames_start + 8*sizeof(frame_bitset)*FRAME_SIZE);
 }
 
 static inline size_t turn_on_first_available_bit(BitsetChunk *bitset, size_t size) {
@@ -70,7 +71,7 @@ uintptr_t pma_get_frame(PMA_FrameSize frame_size) {
         return frames_start + FRAME_SIZE*frame_idx;
     }
 
-    if (frame_size == PMA_NORMAL) {
+    if (frame_size == PMA_HUGE) {
         size_t frame_idx = turn_on_first_available_bit(huge_frame_bitset, HUGE_FRAMES_BITSET_SIZE);
         return huge_frames_start + HUGE_FRAME_SIZE*frame_idx;
     }
@@ -78,12 +79,17 @@ uintptr_t pma_get_frame(PMA_FrameSize frame_size) {
     panic("[PMA] Got unexpected enum argument");
 }
 
-static inline void mark_frame_free_in_bitset(BitsetChunk *bitset, size_t bitset_size, size_t frame_size, uintptr_t frame_addr) {
+static inline void mark_frame_free_in_bitset(PMA_FrameSize size, uintptr_t frame_addr) {
+    BitsetChunk *bitset = size == PMA_NORMAL ? frame_bitset : huge_frame_bitset;
+    size_t bitset_size = size == PMA_NORMAL ? FRAMES_BITSET_SIZE : HUGE_FRAMES_BITSET_SIZE;
+    size_t frame_size = size == PMA_NORMAL ? FRAME_SIZE : HUGE_FRAME_SIZE;
+    uintptr_t frames_start_addr = size == PMA_NORMAL ? frames_start : huge_frames_start;
+
     if (frame_addr & (frame_size - 1)) {
         panic("[PMA] Received call to free misalligned frame");
     }
 
-    const int bit = (frame_addr-frames_start)/frame_size;
+    const int bit = (frame_addr-frames_start_addr)/frame_size;
 
     if (bit / CHUNK_BITS >= bitset_size) {
         panic("[PMA] Received call to free out of bounds frame");
@@ -104,10 +110,10 @@ void pma_free_frame(uintptr_t frame_addr) {
     bool is_huge_frame = frame_addr >= huge_frames_start;
 
     if (is_huge_frame) {
-        mark_frame_free_in_bitset(huge_frame_bitset, HUGE_FRAMES_BITSET_SIZE, HUGE_FRAME_SIZE, frame_addr);
+        mark_frame_free_in_bitset(PMA_HUGE, frame_addr);
 
         return;
     }
 
-    mark_frame_free_in_bitset(frame_bitset, FRAMES_BITSET_SIZE, FRAME_SIZE, frame_addr);
+    mark_frame_free_in_bitset(PMA_NORMAL, frame_addr);
 }
