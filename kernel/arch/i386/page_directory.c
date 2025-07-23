@@ -16,6 +16,7 @@ typedef enum PDE_Flags {
 } PDE_Flags;
 
 extern void endkernel;
+extern void page_tables;
 extern PDE page_dir[ENTRIES];
 
 PDE* pde_get_by_linear_address(uintptr_t addr) {
@@ -37,16 +38,17 @@ void pde_write_page_address(PDE *entry, uint32_t addr) {
     *entry = entry_val;
 }
 
-void pde_write_table_address(PDE *entry, uint32_t addr) {
-    uint32_t aligned_addr = (addr >> 12) << 12;
+void pde_write_table_address(PDE *entry) {
+    ptrdiff_t entry_index = entry - page_dir;
+    const size_t table_entry_size = 4;
+    const size_t table_entries = 1024;
+    const uintptr_t tables_addr = (uintptr_t)&page_tables;
 
-    if (addr != aligned_addr) {
-        panic("Expected 4KB aligned address");
-    }
+    const uintptr_t table_addr = tables_addr + table_entry_size*table_entries*entry_index;
 
     // Clear old base address and preserve flags
     PDE entry_val = *entry & 0xFFF;
-    entry_val |= aligned_addr;
+    entry_val |= table_addr;
     entry_val &= ~(PDE)PDE_PAGE_SIZE;
 
     *entry = entry_val;

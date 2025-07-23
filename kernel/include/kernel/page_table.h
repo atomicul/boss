@@ -13,7 +13,7 @@ typedef enum PTE_Flags {
 } PTE_Flags;
 
 void pte_init(void);
-PTE* pte_get_by_linear_address(size_t page_idx, uintptr_t addr);
+PTE* pte_get_by_linear_address(uintptr_t addr);
 void pte_write_page_address(PTE *entry, uint32_t addr);
 
 #endif

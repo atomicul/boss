@@ -19,11 +19,12 @@ typedef enum PTE_Flags {
 extern void endkernel;
 extern void page_tables;
 
-PTE* pte_get_by_linear_address(size_t table_idx, uintptr_t addr) {
+PTE* pte_get_by_linear_address(uintptr_t addr) {
     const uintptr_t page_tables_physical_addr = (uintptr_t)&page_tables;
     PTE * const page_tables_virtual_addr = (PTE*)(page_tables_physical_addr + KERNEL_ADDRESS);
-    const size_t entry_idx = addr&0x3FF000;
-    return page_tables_virtual_addr + ENTRIES*table_idx + entry_idx;
+    const size_t entry_idx = addr >> 12;
+
+    return page_tables_virtual_addr  + entry_idx;
 }
 
 void pte_write_page_address(PTE *entry, uint32_t addr) {
@@ -41,5 +42,5 @@ void pte_write_page_address(PTE *entry, uint32_t addr) {
 }
 
 void pte_init(void) {
-    memset(pte_get_by_linear_address(0, 0), 0, TABLES*ENTRIES);
+    memset(pte_get_by_linear_address(0), 0, TABLES*ENTRIES);
 }
