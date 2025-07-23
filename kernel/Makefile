@@ -4,8 +4,6 @@ BUILDDIR ?= build
 ARCHDIR := arch
 ARCH ?= i386
 
-KERNELDIR := kernel
-
 LIBS ?=
 LIBS := $(LIBS) -nostdlib -lgcc -lk
 
@@ -14,7 +12,7 @@ ARCH_OBJS := $(addprefix $(ARCHDIR)/$(ARCH)/,$(ARCH_OBJS))
 
 OBJS=\
 $(ARCH_OBJS) \
-$(KERNELDIR)/kernel.o
+kernel.o
 
 OBJS := $(addprefix $(BUILDDIR)/,$(OBJS))
 
