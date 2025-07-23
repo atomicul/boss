@@ -16,8 +16,8 @@ typedef enum PTE_Flags {
     PTE_SUPERVISOR_ONLY = 1<<2,
 } PTE_Flags;
 
-extern void endkernel;
-extern void page_tables;
+extern struct __undefined endkernel;
+extern struct __undefined page_tables;
 
 PTE* pte_get_by_linear_address(uintptr_t addr) {
     const uintptr_t page_tables_physical_addr = (uintptr_t)&page_tables;

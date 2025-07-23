@@ -17,7 +17,7 @@
 typedef uint32_t BitsetChunk;
 #define CHUNK_BITS (8*sizeof(BitsetChunk))
 
-extern void endkernel;
+extern struct __undefined endkernel;
 uintptr_t frames_start;
 uintptr_t huge_frames_start;
 
