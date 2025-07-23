@@ -31,7 +31,7 @@ void pte_write_page_address(PTE *entry, uint32_t addr) {
     uint32_t aligned_addr = (addr >> 12) << 12;
 
     if (addr != aligned_addr) {
-        panic("Expected 4KB aligned address");
+        panic("[PTE] Expected 4KB aligned address");
     }
 
     // Clear old base address and preserve flags

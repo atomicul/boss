@@ -61,7 +61,7 @@ static inline size_t turn_on_first_available_bit(BitsetChunk *bitset, size_t siz
         }
     }
 
-    panic("Ran out of frame to allocate");
+    panic("[PMA] Ran out of frame to allocate");
 }
 
 uintptr_t pma_get_frame(PMA_FrameSize frame_size) {
@@ -75,22 +75,22 @@ uintptr_t pma_get_frame(PMA_FrameSize frame_size) {
         return huge_frames_start + HUGE_FRAME_SIZE*frame_idx;
     }
 
-    panic("Got unexpected enum argument");
+    panic("[PMA] Got unexpected enum argument");
 }
 
 static inline void mark_frame_free_in_bitset(BitsetChunk *bitset, size_t bitset_size, size_t frame_size, uintptr_t frame_addr) {
     if (frame_addr & (frame_size - 1)) {
-        panic("Received call to free misalligned frame");
+        panic("[PMA] Received call to free misalligned frame");
     }
 
     const int bit = (frame_addr-frames_start)/frame_size;
 
     if (bit / CHUNK_BITS >= bitset_size) {
-        panic("Received call to free out of bounds frame");
+        panic("[PMA] Received call to free out of bounds frame");
     }
 
     if (KTH_BIT(bitset, bit) == 0) {
-        panic("Attempted to free already free frame");
+        panic("[PMA] Attempted to free already free frame");
     }
 
     TOGGLE_KTH_BIT(bitset, bit);
@@ -98,7 +98,7 @@ static inline void mark_frame_free_in_bitset(BitsetChunk *bitset, size_t bitset_
 
 void pma_free_frame(uintptr_t frame_addr) {
     if (frame_addr < frames_start) {
-        panic("Received call to free out of bounds frame");
+        panic("[PMA] Received call to free out of bounds frame");
     }
 
     bool is_huge_frame = frame_addr >= huge_frames_start;

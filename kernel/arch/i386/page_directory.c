@@ -27,7 +27,7 @@ void pde_write_page_address(PDE *entry, uint32_t addr) {
     uint32_t aligned_addr = (addr >> 22) << 22;
 
     if (addr != aligned_addr) {
-        panic("Expected 4MB aligned address");
+        panic("[PDE] Expected 4MB aligned address");
     }
 
     // Clear old base address and preserve flags
