@@ -30,7 +30,7 @@ void pde_write_page_address(PDE *entry, uint32_t addr) {
     }
 
     // Clear old base address and preserve flags
-    PDE entry_val = *entry & 0x003FFFFF;
+    PDE entry_val = *entry & 0xFFF;
     entry_val |= aligned_addr;
     entry_val |= PDE_PAGE_SIZE;
 
@@ -45,9 +45,9 @@ void pde_write_table_address(PDE *entry, uint32_t addr) {
     }
 
     // Clear old base address and preserve flags
-    PDE entry_val = *entry & 0x003FFFFF;
+    PDE entry_val = *entry & 0xFFF;
     entry_val |= aligned_addr;
-    entry_val |= PDE_PAGE_SIZE;
+    entry_val &= ~(PDE)PDE_PAGE_SIZE;
 
     *entry = entry_val;
 }
