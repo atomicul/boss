@@ -28,14 +28,14 @@ SECTIONS
 
     .pagedir BLOCK(4K) : ALIGN(4K)
     {
-        page_dir = .;
+        __page_dir = .;
         . += 4K;
     }
 
     .pagetables BLOCK(4K) : ALIGN(4K)
     {
-        page_tables = .;
+        __page_tables = .;
         . += 4M;
-        endkernel = .;
+        __endkernel = .;
     }
 }

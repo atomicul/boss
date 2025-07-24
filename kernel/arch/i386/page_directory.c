@@ -15,12 +15,12 @@ typedef enum PDE_Flags {
     PDE_PAGE_SIZE       = 1<<7,
 } PDE_Flags;
 
-extern struct __undefined endkernel;
-extern struct __undefined page_tables;
-extern PDE page_dir[ENTRIES];
+extern struct __undefined __endkernel;
+extern struct __undefined __page_tables;
+extern PDE __page_dir[ENTRIES];
 
 PDE* pde_get_by_linear_address(uintptr_t addr) {
-    return page_dir + (addr >> 22);
+    return __page_dir + (addr >> 22);
 }
 
 void pde_write_page_address(PDE *entry, uint32_t addr) {
@@ -39,10 +39,10 @@ void pde_write_page_address(PDE *entry, uint32_t addr) {
 }
 
 void pde_write_table_address(PDE *entry) {
-    ptrdiff_t entry_index = entry - page_dir;
+    ptrdiff_t entry_index = entry - __page_dir;
     const size_t table_entry_size = 4;
     const size_t table_entries = 1024;
-    const uintptr_t tables_addr = (uintptr_t)&page_tables;
+    const uintptr_t tables_addr = (uintptr_t)&__page_tables;
 
     const uintptr_t table_addr = tables_addr + table_entry_size*table_entries*entry_index;
 
@@ -56,11 +56,11 @@ void pde_write_table_address(PDE *entry) {
 
 void pde_init(void) {
     // Identity map first 4MB
-    pde_write_page_address(page_dir, 0);
-    page_dir[0] |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;
+    pde_write_page_address(__page_dir, 0);
+    __page_dir[0] |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;
 
     // Clear the rest of the page directory
-    memset(page_dir+1, 0, ENTRIES - 1);
+    memset(__page_dir+1, 0, ENTRIES - 1);
 
     // Map the kernel in the higher half
     const uintptr_t kernel_position = 0xC0000000;
@@ -68,7 +68,7 @@ void pde_init(void) {
     PDE* entry = pde_get_by_linear_address(kernel_position);
 
     uintptr_t physical_addr = 0;
-    uintptr_t endkernel_addr = (uintptr_t)&endkernel;
+    uintptr_t endkernel_addr = (uintptr_t)&__endkernel;
     for (; endkernel_addr > physical_addr; entry++, physical_addr += 1 << 22) {
         pde_write_page_address(entry, physical_addr);
         *entry |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;

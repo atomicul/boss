@@ -16,11 +16,11 @@ typedef enum PTE_Flags {
     PTE_SUPERVISOR_ONLY = 1<<2,
 } PTE_Flags;
 
-extern struct __undefined endkernel;
-extern struct __undefined page_tables;
+extern struct __undefined __endkernel;
+extern struct __undefined __page_tables;
 
 PTE* pte_get_by_linear_address(uintptr_t addr) {
-    const uintptr_t page_tables_physical_addr = (uintptr_t)&page_tables;
+    const uintptr_t page_tables_physical_addr = (uintptr_t)&__page_tables;
     PTE * const page_tables_virtual_addr = (PTE*)(page_tables_physical_addr + KERNEL_ADDRESS);
     const size_t entry_idx = addr >> 12;
 

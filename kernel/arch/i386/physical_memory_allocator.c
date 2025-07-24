@@ -17,7 +17,7 @@
 typedef uint32_t BitsetChunk;
 #define CHUNK_BITS (8*sizeof(BitsetChunk))
 
-extern struct __undefined endkernel;
+extern struct __undefined __endkernel;
 uintptr_t frames_start;
 uintptr_t huge_frames_start;
 
@@ -42,7 +42,7 @@ void pma_init(void) {
     if (frames_start)
         return;
 
-    frames_start = next_aligned_huge_frame((uintptr_t)&endkernel);
+    frames_start = next_aligned_huge_frame((uintptr_t)&__endkernel);
     huge_frames_start = next_aligned_huge_frame(frames_start + 8*sizeof(frame_bitset)*FRAME_SIZE);
 }
 
