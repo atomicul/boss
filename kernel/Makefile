@@ -12,6 +12,7 @@ ARCH_OBJS := $(addprefix $(ARCHDIR)/$(ARCH)/,$(ARCH_OBJS))
 
 OBJS=\
 $(ARCH_OBJS) \
+node_allocator.o \
 kernel.o
 
 OBJS := $(addprefix $(BUILDDIR)/,$(OBJS))
