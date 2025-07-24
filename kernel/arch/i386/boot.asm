@@ -6,9 +6,9 @@ CHECKSUM equ -(MAGIC + MBFLAGS)
 
 section .multiboot
 align 4
-	dd MAGIC
-	dd MBFLAGS
-	dd CHECKSUM
+    dd MAGIC
+    dd MBFLAGS
+    dd CHECKSUM
 
 section .bss
 align 16
@@ -20,15 +20,15 @@ section .text
 extern enable_paging
 global _start:function (_start.end - _start)
 _start:
-	mov esp, stack_top
+    mov esp, stack_top
 
     call enable_paging
 
-	extern kernel_main
-	call kernel_main
+    extern kernel_main
+    call kernel_main
 
-	cli
+    cli
 .hang:
     hlt
-	jmp .hang
+    jmp .hang
 .end:
