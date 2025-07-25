@@ -1,41 +1,48 @@
-ENTRY(_start)
+ENTRY(_start) 
 
 SECTIONS
 {
-    . = 2M;
+    . = 1M;
 
-    .text BLOCK(4K) : ALIGN(4K)
+    __kernel_start = .;
+    .multiboot :
     {
-        *(.multiboot)
+        KEEP(*(.multiboot))
+        *(.boot)
+    }
+
+    . += 0xC0000000;
+
+    .text BLOCK(4K) : AT(ADDR(.text) - 0xC0000000)
+    {
         *(.text)
     }
 
-    .rodata BLOCK(4K) : ALIGN(4K)
+    .rodata BLOCK(4K) : AT(ADDR(.rodata) - 0xC0000000)
     {
         *(.rodata)
     }
 
-    .data BLOCK(4K) : ALIGN(4K)
+    .data BLOCK(4K) : AT(ADDR(.data) - 0xC0000000)
     {
         *(.data)
     }
 
-    .bss BLOCK(4K) : ALIGN(4K)
+    .bss BLOCK(4K) : AT(ADDR(.bss) - 0xC0000000)
     {
         *(COMMON)
         *(.bss)
-    }
 
-    .pagedir BLOCK(4K) : ALIGN(4K)
-    {
+        . = ALIGN(4K);
         __page_dir = .;
+        __page_dir_physical = . - 0xC0000000;
         . += 4K;
-    }
 
-    .pagetables BLOCK(4K) : ALIGN(4K)
-    {
+        . = ALIGN(4K);
         __page_tables = .;
+        __page_tables_physical = . - 0xC0000000;
         . += 4M;
         __endkernel = .;
+        __endkernel_physical = . - 0xC0000000;
     }
 }

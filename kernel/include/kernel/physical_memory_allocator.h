@@ -11,7 +11,6 @@ typedef enum PMA_FrameSize {
     PMA_HUGE = 1,
 } PMA_FrameSize;
 
-void pma_init(void);
 uintptr_t pma_get_frame(PMA_FrameSize frame_size);
 void pma_free_frame(uintptr_t frame_addr);
 

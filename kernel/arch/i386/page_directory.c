@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #define ENTRIES 1024
 
@@ -15,8 +14,7 @@ typedef enum PDE_Flags {
     PDE_PAGE_SIZE       = 1<<7,
 } PDE_Flags;
 
-extern struct __undefined __endkernel;
-extern struct __undefined __page_tables;
+extern struct __undefined __page_tables_physical;
 extern PDE __page_dir[ENTRIES];
 
 PDE* pde_get_by_linear_address(uintptr_t addr) {
@@ -36,41 +34,4 @@ void pde_write_page_address(PDE *entry, uint32_t addr) {
     entry_val |= PDE_PAGE_SIZE;
 
     *entry = entry_val;
-}
-
-void pde_write_table_address(PDE *entry) {
-    ptrdiff_t entry_index = entry - __page_dir;
-    const size_t table_entry_size = 4;
-    const size_t table_entries = 1024;
-    const uintptr_t tables_addr = (uintptr_t)&__page_tables;
-
-    const uintptr_t table_addr = tables_addr + table_entry_size*table_entries*entry_index;
-
-    // Clear old base address and preserve flags
-    PDE entry_val = *entry & 0xFFF;
-    entry_val |= table_addr;
-    entry_val &= ~(PDE)PDE_PAGE_SIZE;
-
-    *entry = entry_val;
-}
-
-void pde_init(void) {
-    // Identity map first 4MB
-    pde_write_page_address(__page_dir, 0);
-    __page_dir[0] |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;
-
-    // Clear the rest of the page directory
-    memset(__page_dir+1, 0, ENTRIES - 1);
-
-    // Map the kernel in the higher half
-    const uintptr_t kernel_position = 0xC0000000;
-
-    PDE* entry = pde_get_by_linear_address(kernel_position);
-
-    uintptr_t physical_addr = 0;
-    uintptr_t endkernel_addr = (uintptr_t)&__endkernel;
-    for (; endkernel_addr > physical_addr; entry++, physical_addr += 1 << 22) {
-        pde_write_page_address(entry, physical_addr);
-        *entry |= PDE_PRESENT | PDE_WRITE_ENABLED | PDE_SUPERVISOR_ONLY;
-    }
 }

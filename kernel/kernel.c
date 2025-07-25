@@ -1,11 +1,5 @@
 #include <stddef.h>
 #include <stdint.h>
-
-#include <kernel/tty.h>
-#include <kernel/physical_memory_allocator.h>
-#include <kernel/page_directory.h>
-#include <kernel/page_table.h>
-
 #include <stdio.h>
 
 #if defined(__linux__)
@@ -15,11 +9,5 @@
 #endif
 
 void kernel_main(void) {
-    term_clear(); // init terminal
-    pde_init();
-    pte_init();
-    pma_init();
-
-    puts("Hello, LinkedIn!");
-    puts("Welcome to my kernel.");
+    puts("I'm in the higher half :D");
 }
