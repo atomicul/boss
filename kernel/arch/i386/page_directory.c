@@ -14,7 +14,6 @@ typedef enum PDE_Flags {
     PDE_PAGE_SIZE       = 1<<7,
 } PDE_Flags;
 
-extern struct __undefined __page_tables_physical;
 extern PDE __page_dir[ENTRIES];
 
 PDE* pde_get_by_linear_address(uintptr_t addr) {
