@@ -1,6 +1,7 @@
 extern kernel_main
 extern enable_paging
 extern pma_init
+extern mem_init
 extern term_clear
 extern __page_dir
 
@@ -40,6 +41,7 @@ after_paging:
     call term_clear
 
     call pma_init
+    call mem_init
 
     call kernel_main
 
