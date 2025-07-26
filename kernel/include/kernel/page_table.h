@@ -9,7 +9,7 @@ typedef uint32_t PTE;
 typedef enum PTE_Flags {
     PTE_PRESENT         = 1<<0,
     PTE_WRITE_ENABLED   = 1<<1,
-    PTE_SUPERVISOR_ONLY = 1<<2,
+    PTE_USER_ACCESS     = 1<<2,
 } PTE_Flags;
 
 PTE* pte_get_by_linear_address(uintptr_t addr);

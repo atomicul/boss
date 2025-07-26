@@ -10,7 +10,7 @@ KERNEL_ADDR      equ 0xC0000000
 ; Page directory/table entry flags
 PDE_PRESENT      equ 1 << 0   ; Present bit
 PDE_WRITABLE     equ 1 << 1   ; Read/Write bit
-PDE_SUPERVISOR   equ 1 << 2   ; Kernel access only
+PDE_USER         equ 1 << 2   ; Enable user access
 PDE_PAGESIZE     equ 1 << 7   ; 4MB page
 
 ; Control register flags
@@ -20,12 +20,12 @@ CR4_PSE          equ 1 << 4   ; Enables 4MB pages
 
 enable_paging:
     ; Identity map first directory entry
-    mov [__page_dir_physical], dword (PDE_PRESENT | PDE_WRITABLE | PDE_PAGESIZE | PDE_SUPERVISOR)
+    mov [__page_dir_physical], dword (PDE_PRESENT | PDE_WRITABLE | PDE_PAGESIZE)
 
     ; Map kernel in higher half
     mov edi, __page_dir_physical + ENTRY_SIZE*(KERNEL_ADDR >> 22)
     xor eax, eax
-    mov edx, PDE_PRESENT | PDE_WRITABLE | PDE_PAGESIZE | PDE_SUPERVISOR
+    mov edx, PDE_PRESENT | PDE_WRITABLE | PDE_PAGESIZE
 
 .set_entry:
     mov [edi], eax                ; Store lower 32 bits of entry (address bits 31-22)
