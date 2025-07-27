@@ -7,7 +7,7 @@ const int VGA_SIZE = VGA_COLS*VGA_ROWS;
 
 int term_col;
 int term_row;
-uint8_t term_color = 0x1F;
+uint8_t term_color = 0x02;
 
 void term_clear(void) {
     term_col = 0;
