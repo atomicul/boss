@@ -1,5 +1,5 @@
 # bOSs
-Practice repository to get me accustomed to low-level OS concepts.
+Fun hobby project to learn operating systems :D
 
 ## Running the operating system
 First, download an image from the [releases](https://github.com/atomicul/boss/releases) page
