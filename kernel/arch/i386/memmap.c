@@ -131,6 +131,7 @@ static inline void reclaim_free_space(uintptr_t addr, size_t size) {
 
     i = new_node;
 
+    // Try merge with the previous node
     if (prev != NULL && prev->address + prev->size >= i->address) {
         prev->next = i->next;
         prev->size = i->address + i->size - prev->address;
@@ -140,6 +141,7 @@ static inline void reclaim_free_space(uintptr_t addr, size_t size) {
         prev = NULL;
     }
 
+    // Try merge with the next node
     if (i->next != NULL && i->address + i->size >= i->next->address) {
         FreeSpace *p = i->next;
         i->next = p->next;
