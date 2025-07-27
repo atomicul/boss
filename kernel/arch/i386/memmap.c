@@ -221,6 +221,34 @@ void memfree(void *address) {
     entry->size = 0;
 }
 
+uintptr_t memphys(void *addr) {
+    uintptr_t addr_int = (uintptr_t)addr;
+
+    PDE *pde = pde_get_by_linear_address(addr_int);
+
+    if (!(*pde & PDE_PRESENT)) {
+        return NULL;
+    }
+
+    if (*pde & PDE_PAGE_SIZE) {
+        uintptr_t offset = ((1<<22) - 1)&addr_int;
+        uintptr_t frame_addr = *pde >> 22 << 22;
+
+        return frame_addr + offset;
+    }
+
+    PTE *pte = pte_get_by_linear_address(addr_int);
+
+    if (!(*pte & PTE_PRESENT)) {
+        return NULL;
+    }
+
+    uintptr_t offset = ((1<<12) - 1)&addr_int;
+    uintptr_t frame_addr = *pte >> 12 << 12;
+
+    return frame_addr + offset;
+}
+
 void mem_init(void) {
     nalloc_init(nodes_buff, sizeof(nodes_buff), sizeof(FreeSpace));
 
@@ -231,3 +259,8 @@ void mem_init(void) {
     free_list->size = KERNEL_START  - free_list->address;
 }
 
+void print_debug(void) {
+    for (FreeSpace *i = free_list; i != NULL; i = i->next) {
+        printf("FreeSpace 0x%x: { addr=0x%x, size=%u }\n", i, i->address, i->size);
+    }
+}
