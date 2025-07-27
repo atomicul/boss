@@ -1,46 +1,59 @@
-builddir := build
-boot := ${builddir}/boot.o
-kernel := ${builddir}/kernel.o
-isodir := ${builddir}/isodir
-grub := ${isodir}/boot/grub/grub.cfg
-bin := ${isodir}/boot/boss.bin
-iso := ${builddir}/boss.iso
+export OSNAME ?= boss
+export ARCH ?= i386
+
+HEADER_PROJECTS=\
+libk \
+kernel
+
+PROJECTS=\
+libk \
+kernel \
+grub
+
+CWD != pwd
+
+export DESTDIR := $(CWD)/isodir
+ISO := $(OSNAME).iso
+
+CFLAGS ?= -O2 -g
+CFLAGS := $(CFLAGS) --sysroot=$(DESTDIR) -isystem=/usr/include
+export CFLAGS
 
 .PHONY: build
-build: ${iso}
+build:
+	for p in $(HEADER_PROJECTS); do \
+		echo "* Running $(MAKE) install-headers in $$p"; \
+		$(MAKE) -C "$$p" install-headers; \
+	done
+	for p in $(PROJECTS); do \
+		echo "* Running $(MAKE) install in $$p"; \
+		$(MAKE) -C "$$p" install; \
+	done
+
+.PHONY: iso
+iso: $(ISO)
+
+$(ISO): build
+	grub-mkrescue -o $@ "$(DESTDIR)"
 
 .PHONY: run
-run: ${iso}
-	qemu-system-i386 -cdrom ${iso}
+run: $(ISO)
+ifndef QEMU
+	$(error you must specify $$QEMU)
+endif
+	$(QEMU) -cdrom $(ISO)
 
 .PHONY: clean
 clean:
-	rm -rf ${builddir}
+	rm -rf "$(DESTDIR)"
+	rm -f $(ISO)
+	for p in $(PROJECTS); do $(MAKE) -C "$$p" clean; done
+
 
 .PHONY: help
 help:
-	@echo 'make build		default target, builds' ${iso}
-	@echo 'make run  		runs generated iso with qemu'
-	@echo 'make clean  		deletes build directory'
-	@echo 'make help  		shows this help screen'
-
-${iso}: ${bin} ${grub}
-	dirname ${iso} | xargs mkdir -p
-	grub-mkrescue -o ${iso} ${isodir}
-
-${bin}: ${kernel} ${boot} linker.ld
-	dirname ${bin} | xargs mkdir -p
-	i686-elf-gcc -ffreestanding -nostdlib -T linker.ld ${boot} ${kernel} -o ${bin} -lgcc
-
-${grub}:
-	dirname ${grub} | xargs mkdir -p
-	echo 'menuentry "boss" { multiboot /boot/boss.bin }' > ${grub}
-
-${kernel}: kernel.c
-	dirname ${kernel} | xargs mkdir -p
-	i686-elf-gcc -std=gnu99 -ffreestanding -O2 -c kernel.c -o ${kernel}
-
-${boot}: boot.asm
-	dirname ${boot} | xargs	mkdir -p
-	nasm -felf32 boot.asm -o ${boot}
-
+	@echo 'make build	default target, builds systemdir'
+	@echo 'make iso	makes' $(ISO)
+	@echo 'make run  	runs with qemu'
+	@echo 'make clean  	deletes all generated artifacts'
+	@echo 'make help  	shows this help screen'

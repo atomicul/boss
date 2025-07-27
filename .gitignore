@@ -1,2 +1,5 @@
-build
-.cache/clangd/index
+**/build
+**/.cache/clangd/index
+**/compile_commands.json
+isodir
+boss.iso
